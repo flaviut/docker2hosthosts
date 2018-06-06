@@ -1,0 +1,8 @@
+[package]
+name = "docker2hosthosts"
+version = "0.1.0"
+authors = ["Flaviu Tamas <tamasflaviu@gmail.com>"]
+
+[dependencies]
+shiplift = { git = "https://github.com/flaviut/shiplift", rev = "a43916bf9a992ea71b2c2d46dbbafe239afbba49" }
+clap = "2.31.2"
