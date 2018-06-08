@@ -25,3 +25,14 @@ This file will have following format:
 
 You don't need to add the deliminators yourself, they will be automatically
 created on the first run.
+
+If you use Arch Linux, you can grab this package [from the AUR
+(docker2hosthosts)][aur-link] and simply run:
+
+```console
+# systemctl daemon-reload
+# systemctl enable docker2hosthosts
+# systemctl start docker2hosthosts
+```
+
+[aur-link]: https://aur.archlinux.org/packages/docker2hosthosts/
