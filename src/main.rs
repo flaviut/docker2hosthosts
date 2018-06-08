@@ -55,10 +55,11 @@ fn update_hosts(docker: &Docker, output_file: &String) -> Result<(), shiplift::E
     }
 
     let mut terminator_slices = existing_contents.split(&HOSTS_HEADER);
+    let generated_hosts = generate_hosts(&docker)?.into_bytes();
     let mut file = fs::File::create(&output_file)?;
     file.write_all(terminator_slices.next().unwrap_or(&String::default()).as_bytes())?;
     file.write_all(HOSTS_HEADER.as_bytes())?;
-    file.write_all(generate_hosts(&docker)?.as_bytes())?;
+    file.write_all(&generated_hosts)?;
     terminator_slices.next();  // discard the old contents
     file.write_all(HOSTS_HEADER.as_bytes())?;
     file.write_all(terminator_slices.next().unwrap_or(&String::default()).as_bytes())?;
