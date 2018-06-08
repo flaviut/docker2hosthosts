@@ -6,11 +6,9 @@ use clap::{Arg, App};
 use std::{thread, time, fs};
 use std::io::{Write, Read};
 
-fn get_container_ip_rep(container: &rep::ContainerDetails) -> String {
+fn get_container_ips<'a>(container: &'a rep::ContainerDetails) -> impl Iterator<Item = &'a String> {
     return container.NetworkSettings.Networks.values()
-        .map(|network| &*network.IPAddress)
-        .collect::<Vec<&str>>()
-        .join(" ");
+        .map(|network| &network.IPAddress);
 }
 
 fn container_to_exposed_hostname(container: &rep::ContainerDetails) -> String {
@@ -23,10 +21,12 @@ fn container_to_exposed_hostname(container: &rep::ContainerDetails) -> String {
     }
 }
 
-fn container_to_hosts_entry(container: &rep::ContainerDetails) -> String {
+fn container_to_hosts_entries(container: &rep::ContainerDetails) -> String {
     let domain = container_to_exposed_hostname(container);
-    let ip = get_container_ip_rep(container);
-    return format!("{}\t{}", domain, ip);
+    return get_container_ips(container)
+        .map(|ip| format!("{}\t{}", ip, domain))
+        .collect::<Vec<_>>()
+        .join("\n");
                              
 }
 
@@ -37,7 +37,7 @@ fn generate_hosts(docker: &Docker) -> Result<String, shiplift::Error> {
               .map(|container_rep| Container::new(&docker, container_rep.Id.clone()).inspect())
               .collect::<Result<Vec<_>, _>>()?
               .iter()
-              .map(|container| container_to_hosts_entry(&container))
+              .map(|container| container_to_hosts_entries(&container))
               .collect::<Vec<_>>()
               .join("\n") + "\n");
 }
