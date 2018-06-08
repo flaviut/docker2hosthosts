@@ -1,0 +1,12 @@
+[Unit]
+Description=Update hosts file on Docker container start/stop
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+
+[Service]
+ExecStart=/usr/bin/docker2hosthosts -o /etc/hosts
+Type=simple
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
